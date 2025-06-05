@@ -2,3 +2,4 @@
 *.engine 
 *.onnx
 *.pyc
+src/exp/*
