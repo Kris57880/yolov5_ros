@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
     <!-- Detection configuration -->
     <arg name="weights" default="$(find yolov5_ros)/best.pt"/>

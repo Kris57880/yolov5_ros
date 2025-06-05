@@ -3,11 +3,8 @@
     <!-- Detection configuration -->
     <!-- <arg name="weights" default="/home/ncrl/catkin_ws/src/yolov5_ros/src/tph-yolov5/18kpic_50epochs.pt"/> -->
     <!-- <arg name="data" default="$(find yolov5_ros)/src/tph-yolov5/data/VisDrone.yaml"/> -->
-    <!--<arg name="weights" default="/home/ncrl/catkin_ws/src/yolov5_ros/src/tph-yolov5/muti_boats_8x_epoch3k.pt"/>-->
-    <arg name="weights" default="$(find yolov5_ros)/src/tph-yolov5/0311one_classes_boat.pt" />
-    <arg name="data" default="$(find yolov5_ros)/src/tph-yolov5/data/MultipleBoat.yaml"/> 
-    <!-- <arg name="weights" default="/home/ncrl/catkin_ws/src/yolov5_ros/src/tph-yolov5/muti_boats_one_class.pt"/>
-    <arg name="data" default="$(find yolov5_ros)/src/tph-yolov5/data/Mship_one_class.yaml"/> -->
+    <arg name="weights" default="/home/ncrl/catkin_ws/src/yolov5_ros/src/tph-yolov5/muti_boats_one_class.pt"/>
+    <arg name="data" default="$(find yolov5_ros)/src/tph-yolov5/data/Mship_one_class.yaml"/>
 
     <arg name="confidence_threshold" default="0.2"/>
     <arg name="iou_threshold" default="0.45"/>
@@ -19,14 +16,14 @@
     <arg name="half" default="false"/>
 
     <!-- replace imgsz -->
-    <arg name="inference_size_h" default="2000"/>
-    <arg name="inference_size_w" default="2000"/>
+    <arg name="inference_size_h" default="480"/>
+    <arg name="inference_size_w" default="640"/>
 
     <!-- Visualize using OpenCV window -->
     <arg name="view_image" default="true"/>
 
     <!-- ROS topics -->
-    <arg name="input_image_topic" default="/camera/color/image_raw/compressed"/>
+    <arg name="input_image_topic" default="/camera/color/image_raw"/>
     <arg name="output_topic" default="/yolov5/detections"/>
 
     <!-- Optional topic (publishing annotated image) -->
@@ -34,7 +31,7 @@
     <arg name="output_image_topic" default="/yolov5/image_out"/>
 
 
-    <node pkg="yolov5_ros" name="detect" type="detect.py" output="screen">
+    <node pkg="yolov5_ros" name="detect" type="detect_trk.py" output="screen">
         <param name="weights" value="$(arg weights)"/>
         <param name="data" value="$(arg data)"/>
         <param name="confidence_threshold" value="$(arg confidence_threshold)"/>

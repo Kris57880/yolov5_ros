@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Demo configuration -->
+    <!-- <arg name="resolution" default="2,2" /> -->
+    <arg name="liif_weights" default="$(find sr_ros)/src/model_weight/1019_epoch-best.pth" />
+    <arg name="classifier_weights" default="$(find sr_ros)/src/model_weight/classifier_epoch-100.pth" />
+    <arg name="enable_liif" default="true" />
+
+    <!-- Detection configuration -->
+    <arg name="yolo_weights" default="$(find yolov5_ros)/src/tph-yolov5/muti_boats_8x_epoch3k.pt" />
+    <arg name="data" default="$(find yolov5_ros)/src/tph-yolov5/data/MultipleBoat.yaml" />
+    
+    <arg name="confidence_threshold" default="0.2"/>
+    <arg name="iou_threshold" default="0.45"/>
+    <arg name="maximum_detections" default="1000"/>
+    <arg name="device" default="0"/>
+    <arg name="agnostic_nms" default="true"/>
+    <arg name="line_thickness" default="3"/>
+    <arg name="dnn" default="true"/>
+    <arg name="half" default="false"/>
+
+     <!-- replace imgsz -->
+    <arg name="inference_size_h" default="480"/>
+    <arg name="inference_size_w" default="640"/>
+
+    <!-- Visualize using OpenCV window -->
+    <arg name="view_image" default="true" />
+
+    <!-- ROS topics -->
+    <arg name="input_image_topic" default="/camera/color/image_raw/compressed"/>
+    <arg name="output_topic" default="/yolov5/detections"/>
+    
+    <!-- Optional topic (publishing annotated image) -->
+    <arg name="publish_image" default="false" />
+    <arg name="output_image_topic" default="/yolov5/image_out" />
+
+    <!-- Initialize ROS node-->
+    <node pkg="yolov5_ros" name="detect" type="sr_ros_detect.py" output="screen">
+        <param name="liif_weights" value="$(arg liif_weights)" />
+        <param name="classifier_weights" value="$(arg classifier_weights)" />
+        <param name="enable_liif" value="$(arg enable_liif)" />
+
+        <param name="yolo_weights" value="$(arg yolo_weights)" />
+        <param name="data" value="$(arg data)" />
+        <param name="confidence_threshold" value="$(arg confidence_threshold)" />
+        <param name="iou_threshold" value="$(arg iou_threshold)" />
+        <param name="maximum_detections" value="$(arg maximum_detections)" />
+        <param name="device" value="$(arg device)" />
+        <param name="agnostic_nms" value="$(arg agnostic_nms)" />
+        <param name="line_thickness" value="$(arg line_thickness)" />
+        <param name="dnn" value="$(arg dnn)" />
+        <param name="half" value="$(arg half)" />
+
+        <param name="inference_size_h" value="$(arg inference_size_h)" />
+        <param name="inference_size_w" value="$(arg inference_size_w)" />
+
+        <param name="input_image_topic" value="$(arg input_image_topic)" />
+        <param name="output_topic" value="$(arg output_topic)" />
+
+        <param name="view_image" value="$(arg view_image)" />
+
+        <param name="publish_image" value="$(arg publish_image)" />
+        <param name="output_image_topic" value="$(arg output_image_topic)" />
+    </node>  
+</launch>

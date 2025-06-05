@@ -1,0 +1,4 @@
+*.pt 
+*.engine 
+*.onnx
+*.pyc

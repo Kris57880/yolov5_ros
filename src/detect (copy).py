@@ -17,14 +17,13 @@ from detection_msgs.msg import BoundingBox, BoundingBoxes
 
 # add yolov5 submodule to path
 FILE = Path(__file__).resolve()
-# ROOT = FILE.parents[0] / "yolov5"
-ROOT = FILE.parents[0] / "tph-yolov5"
+ROOT = FILE.parents[0] / "yolov5"
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative path
 
 # import from yolov5 submodules
-# from models.common import DetectMultiBackend
+from models.common import DetectMultiBackend
 from utils.general import (
     check_img_size,
     check_requirements,
@@ -35,7 +34,6 @@ from utils.plots import Annotator, colors
 from utils.torch_utils import select_device
 from utils.augmentations import letterbox
 
-from models.experimental import attempt_load
 
 @torch.no_grad()
 class Yolov5Detector:
@@ -51,32 +49,15 @@ class Yolov5Detector:
         weights = rospy.get_param("~weights")
         # Initialize model
         self.device = select_device(str(rospy.get_param("~device","")))
-        # self.model = DetectMultiBackend(weights, device=self.device, dnn=rospy.get_param("~dnn"), data=rospy.get_param("~data"))
-        
-        w = str(weights[0] if isinstance(weights, list) else weights)
-        model = torch.jit.load(w) if 'torchscript' in w else attempt_load(weights, map_location=self.device)
-        stride = int(model.stride.max())  # model stride
-        names = model.module.names if hasattr(model, 'module') else model.names  # get class names
-        self.model = model
-        
-        # self.stride, self.names, self.pt, self.jit, self.onnx, self.engine = (
-        #     self.model.stride,
-        #     self.model.names,
-        #     self.model.pt,
-        #     self.model.jit,
-        #     self.model.onnx,
-        #     self.model.engine,
-        # )
-
-        self.stride, self.names, self.pt, self.jit, self.onnx, self.engine  = (
-            stride,
+        self.model = DetectMultiBackend(weights, device=self.device, dnn=rospy.get_param("~dnn"), data=rospy.get_param("~data"))
+        self.stride, self.names, self.pt, self.jit, self.onnx, self.engine = (
+            self.model.stride,
             self.model.names,
-            True,
-            False,
-            False,
-            False,
+            self.model.pt,
+            self.model.jit,
+            self.model.onnx,
+            self.model.engine,
         )
-
 
         # Setting inference size
         self.img_size = [rospy.get_param("~inference_size_w", 640), rospy.get_param("~inference_size_h",480)]
@@ -91,7 +72,7 @@ class Yolov5Detector:
             self.model.model.half() if self.half else self.model.model.float()
         bs = 1  # batch_size
         cudnn.benchmark = True  # set True to speed up constant image size inference
-        # self.model.warmup()  # warmup        
+        self.model.warmup()  # warmup        
         
         # Initialize subscriber to Image/CompressedImage topic
         input_image_type, input_image_topic, _ = get_topic_type(rospy.get_param("~input_image_topic"), blocking = True)
@@ -140,7 +121,7 @@ class Yolov5Detector:
         if len(im.shape) == 3:
             im = im[None]
 
-        pred = self.model(im, augment=False, visualize=False)[0]
+        pred = self.model(im, augment=False, visualize=False)
         pred = non_max_suppression(
             pred, self.conf_thres, self.iou_thres, self.classes, self.agnostic_nms, max_det=self.max_det
         )
